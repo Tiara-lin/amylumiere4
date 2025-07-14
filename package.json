@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "homepage": "https://Tiara-lin.github.io/amylumiere3",
+  "homepage": "https://Tiara-lin.github.io/amylumiere4",
   "scripts": {
     "dev": "vite",
     "build": "vite build && cpx dist/index.html dist/404.html",
