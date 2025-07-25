@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import axios from 'axios';
 
 // ✅ 統一 Base URL
-export const API_BASE_URL = 'https://test-backend4-production.up.railway.app/api';
+export const API_BASE_URL = 'https://amylumiere4-production.up.railway.app/api';
 
 let sessionId: string | null = null;
 
