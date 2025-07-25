@@ -2,28 +2,28 @@ import { useEffect, useRef } from 'react';
 import axios from 'axios';
 
 // ✅ 統一 Base URL
-export const API_BASE_URL = 'https://amylumiere4-production.up.railway.app/api';
+export const API_BASE_URL = 'https://test-backend4-production.up.railway.app/api';
 
-// ✅ module 內還是保留 sessionId，搭配 window
 let sessionId: string | null = null;
 
-interface AnalyticsHook {
+// ✅ 加入 export，供外部 type 引用
+export type AnalyticsHook = {
   trackSession: () => Promise<string | null>;
   ensureSession: () => Promise<void>;
   trackInteraction: (
-    actionType: string,
-    postId?: string,
-    postUsername?: string,
-    additionalData?: any
+    type: string,
+    postId: string,
+    username: string,
+    metadata?: Record<string, any>
   ) => Promise<void>;
   trackPostView: (
     postId: string,
-    postUsername: string,
+    username: string,
     viewDuration: number,
-    scrollPercentage: number,
+    scrollPercent: number,
     mediaType: 'image' | 'video'
-  ) => Promise<void>;
-}
+  ) => void;
+};
 
 export const useAnalytics = (): AnalyticsHook => {
   const sessionTracked = useRef(false);
@@ -38,16 +38,32 @@ export const useAnalytics = (): AnalyticsHook => {
       sessionId = savedSession;
     }
 
+    const uuid = localStorage.getItem('uuid');
+
+    // ✅ 檢查 UUID 格式與存在性
+    const isValidUUID =
+      uuid &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(uuid);
+
+    if (!isValidUUID) {
+      console.warn('⚠️ Invalid or missing UUID:', uuid);
+      return null;
+    }
+
+    const payload = {
+      page_url: window.location.href,
+      session_id: sessionId || null,
+      uuid,
+    };
+
+    console.log('[TRACK SESSION PAYLOAD]', payload);
+
     try {
-      const response = await axios.post(`${API_BASE_URL}/track/session`, {
-        page_url: window.location.href,
-        session_id: sessionId || null
-      });
+      const response = await axios.post(`${API_BASE_URL}/track/session`, payload);
 
       if (response.data.success) {
         sessionId = response.data.session_id;
 
-        // ✅ 保證只有在 sessionId 是字串時才 set
         if (sessionId) {
           sessionStorage.setItem('session_id', sessionId);
           (window as any).sessionId = sessionId;
@@ -55,6 +71,8 @@ export const useAnalytics = (): AnalyticsHook => {
 
         sessionTracked.current = true;
         console.log('✅ Session tracked:', sessionId);
+      } else {
+        console.warn('⚠️ Session tracking failed response:', response.data);
       }
     } catch (error) {
       console.error('❌ Session tracking failed:', error);
@@ -93,15 +111,21 @@ export const useAnalytics = (): AnalyticsHook => {
       return;
     }
 
-    try {
-      await axios.post(`${API_BASE_URL}/track/interaction`, {
-        session_id: sessionId,
-        action_type: actionType,
-        post_id: postId,
-        post_username: postUsername,
-        additional_data: additionalData
-      });
+    const uuid = localStorage.getItem('uuid');
 
+    const payload = {
+      session_id: sessionId,
+      action_type: actionType,
+      post_id: postId,
+      post_username: postUsername,
+      additional_data: additionalData,
+      uuid,
+    };
+
+    console.log('[TRACK INTERACTION PAYLOAD]', payload);
+
+    try {
+      await axios.post(`${API_BASE_URL}/track/interaction`, payload);
       console.log(`✅ Interaction tracked: ${actionType}`);
     } catch (error) {
       console.error('❌ Interaction tracking failed:', error);
@@ -121,30 +145,32 @@ export const useAnalytics = (): AnalyticsHook => {
       return;
     }
 
-    try {
-      await axios.post(`${API_BASE_URL}/track/post-view`, {
-        session_id: sessionId,
-        post_id: postId,
-        post_username: postUsername,
-        view_duration: viewDuration,
-        scroll_percentage: scrollPercentage,
-        media_type: mediaType
-      });
+    const uuid = localStorage.getItem('uuid');
 
+    const payload = {
+      session_id: sessionId,
+      post_id: postId,
+      post_username: postUsername,
+      view_duration: viewDuration,
+      scroll_percentage: scrollPercentage,
+      media_type: mediaType,
+      uuid,
+    };
+
+    console.log('[TRACK POST VIEW PAYLOAD]', payload);
+
+    try {
+      await axios.post(`${API_BASE_URL}/track/post-view`, payload);
       console.log(`✅ Post view tracked: ${postId}`);
     } catch (error) {
       console.error('❌ Post view tracking failed:', error);
     }
   };
 
-  useEffect(() => {
-    trackSession();
-  }, []);
-
   return {
     trackSession,
     ensureSession,
     trackInteraction,
-    trackPostView
+    trackPostView,
   };
 };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal, Play, Volume2, VolumeX } from 'lucide-react';
 import { useAnalytics } from '../hooks/useAnalytics';
+import { AnalyticsHook } from '../hooks/useAnalytics';
 
 interface Comment {
   username: string;
@@ -20,6 +21,7 @@ interface PostProps {
   likes: number;
   timestamp: string;
   comments: Comment[];
+  analytics: AnalyticsHook;
 }
 
 const Post: React.FC<PostProps> = ({
@@ -43,17 +45,13 @@ const Post: React.FC<PostProps> = ({
   const viewStartTime = useRef<number>(Date.now());
   const hasTrackedView = useRef(false);
   
-  const { trackInteraction, trackPostView } = useAnalytics();
-  
-  // Generate a unique post ID based on username and content
+  const { ensureSession, trackInteraction, trackPostView } = useAnalytics(); 
   const postId = `${username}_${caption.slice(0, 20).replace(/\s+/g, '_')}`;
 
-  const handleLike = () => {
+  const handleLike = async () => {
     const newLikedState = !isLiked;
     setIsLiked(newLikedState);
-    
-    // Track like/unlike interaction
-    trackInteraction(
+    await trackInteraction(
       newLikedState ? 'like' : 'unlike', 
       postId, 
       username,
@@ -61,75 +59,63 @@ const Post: React.FC<PostProps> = ({
     );
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const newSavedState = !isSaved;
     setIsSaved(newSavedState);
-    
-    // Track save/unsave interaction
-    trackInteraction(
+    await trackInteraction(
       newSavedState ? 'save' : 'unsave', 
       postId, 
       username
     );
   };
 
-  const handleShare = () => {
-    // Track share interaction
-    trackInteraction('share', postId, username);
-    
-    // You can add actual sharing logic here
+  const handleShare = async () => {
+    await trackInteraction('share', postId, username);
     console.log('Share clicked');
   };
 
-  const handleComment = (e: React.FormEvent) => {
+  const handleComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (comment.trim()) {
-      // Track comment interaction
-      trackInteraction('comment', postId, username, {
+      await trackInteraction('comment', postId, username, {
         comment_text: comment,
         comment_length: comment.length
       });
-      
-      // Clear comment input
       setComment('');
       console.log('Comment posted:', comment);
     }
   };
 
-  const toggleComments = () => {
+  const toggleComments = async () => {
     const newShowAllState = !showAllComments;
     setShowAllComments(newShowAllState);
-    
-    // Track view all comments interaction
     if (newShowAllState) {
-      trackInteraction('view_all_comments', postId, username, {
+      await trackInteraction('view_all_comments', postId, username, {
         total_comments: comments.length
       });
     }
   };
 
-  const togglePlay = () => {
+  const togglePlay = async () => {
     if (videoRef.current) {
       const newPlayingState = !isPlaying;
-      
       if (newPlayingState) {
         videoRef.current.play();
-        trackInteraction('play_video', postId, username);
+        await trackInteraction('play_video', postId, username);
       } else {
         videoRef.current.pause();
-        trackInteraction('pause_video', postId, username);
+        await trackInteraction('pause_video', postId, username);
       }
       setIsPlaying(newPlayingState);
     }
   };
 
-  const toggleMute = () => {
+  const toggleMute = async () => {
     if (videoRef.current) {
       const newMutedState = !isMuted;
       videoRef.current.muted = newMutedState;
       setIsMuted(newMutedState);
-      
-      trackInteraction(
+      await trackInteraction(
         newMutedState ? 'mute_video' : 'unmute_video', 
         postId, 
         username
@@ -137,33 +123,30 @@ const Post: React.FC<PostProps> = ({
     }
   };
 
-  const handleMediaDoubleClick = () => {
-    handleLike();
-    // Track double-tap like
-    trackInteraction('double_tap_like', postId, username);
+  const handleMediaDoubleClick = async () => {
+    await handleLike();
+    await trackInteraction('double_tap_like', postId, username);
   };
 
-  // Track post view when component mounts and when it's scrolled into view
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
+        entries.forEach(async (entry) => {
           if (entry.isIntersecting && !hasTrackedView.current) {
+            await ensureSession();  // ✅ 確保 session 建立（含 UUID）
             hasTrackedView.current = true;
             viewStartTime.current = Date.now();
           } else if (!entry.isIntersecting && hasTrackedView.current) {
-            // Calculate view duration and scroll percentage
             const viewDuration = (Date.now() - viewStartTime.current) / 1000;
             const scrollPercentage = Math.round(
               (entry.boundingClientRect.top / window.innerHeight) * 100
             );
-            
             trackPostView(
               postId,
               username,
               viewDuration,
               Math.abs(scrollPercentage),
-              media?.type || 'image'
+              (media?.type as 'image' | 'video') || 'image'  // ✅ 修正重點：強制轉型
             );
           }
         });
@@ -171,22 +154,17 @@ const Post: React.FC<PostProps> = ({
       { threshold: 0.5 }
     );
 
-    if (postRef.current) {
-      observer.observe(postRef.current);
-    }
-
+    if (postRef.current) observer.observe(postRef.current);
     return () => {
-      if (postRef.current) {
-        observer.unobserve(postRef.current);
-      }
+      if (postRef.current) observer.unobserve(postRef.current);
     };
-  }, [postId, username, media?.type, trackPostView]);
+  }, [postId, username, media?.type, trackPostView, ensureSession]);
 
   const displayedComments = showAllComments ? comments : comments.slice(0, 2);
 
   return (
     <div ref={postRef} className="bg-white border border-gray-200 rounded-lg mb-6 overflow-hidden">
-      {/* Post Header */}
+      {/* Header */}
       <div className="flex items-center justify-between p-3">
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 rounded-full overflow-hidden">
@@ -199,11 +177,11 @@ const Post: React.FC<PostProps> = ({
         </div>
         <MoreHorizontal 
           className="h-5 w-5 text-gray-500 cursor-pointer" 
-          onClick={() => trackInteraction('menu_click', postId, username)}
+          onClick={async () => await trackInteraction('menu_click', postId, username)}
         />
       </div>
 
-      {/* Post Media */}
+      {/* Media */}
       {media && (
         <div className="w-full aspect-square bg-black flex items-center justify-center overflow-hidden relative">
           {media.type === 'image' ? (
@@ -232,9 +210,9 @@ const Post: React.FC<PostProps> = ({
               )}
               <button
                 className="absolute bottom-4 right-4 p-2 bg-black bg-opacity-50 rounded-full text-white"
-                onClick={(e) => {
+                onClick={async (e) => {
                   e.stopPropagation();
-                  toggleMute();
+                  await toggleMute();
                 }}
               >
                 {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
@@ -244,7 +222,7 @@ const Post: React.FC<PostProps> = ({
         </div>
       )}
 
-      {/* Post Actions */}
+      {/* Actions */}
       <div className="p-3">
         <div className="flex justify-between">
           <div className="flex space-x-4">
@@ -254,7 +232,7 @@ const Post: React.FC<PostProps> = ({
             />
             <MessageCircle 
               className="h-6 w-6 cursor-pointer transition-transform hover:scale-110" 
-              onClick={() => trackInteraction('comment_click', postId, username)}
+              onClick={async () => await trackInteraction('comment_click', postId, username)}
             />
             <Send 
               className="h-6 w-6 cursor-pointer transition-transform hover:scale-110" 
@@ -267,17 +245,14 @@ const Post: React.FC<PostProps> = ({
           />
         </div>
 
-        {/* Likes */}
         <p className="font-semibold text-sm mt-2">{likes + (isLiked ? 1 : 0)} likes</p>
 
-        {/* Caption */}
         <div className="mt-1">
           <p className="text-sm">
             <span className="font-semibold">{username}</span> {caption}
           </p>
         </div>
 
-        {/* Comments */}
         {comments.length > 0 && (
           <div className="mt-2">
             {comments.length > 2 && !showAllComments && (
@@ -288,13 +263,11 @@ const Post: React.FC<PostProps> = ({
                 View all {comments.length} comments
               </button>
             )}
-            
             {displayedComments.map((comment, index) => (
               <div key={index} className="text-sm mb-1">
                 <span className="font-semibold">{comment.username}</span> {comment.text}
               </div>
             ))}
-            
             {showAllComments && comments.length > 2 && (
               <button 
                 className="text-sm text-gray-500 mt-1"
@@ -306,10 +279,8 @@ const Post: React.FC<PostProps> = ({
           </div>
         )}
 
-        {/* Timestamp */}
         <p className="text-xs text-gray-500 mt-1">{timestamp}</p>
 
-        {/* Add Comment */}
         <div className="mt-3 border-t border-gray-200 pt-3">
           <form className="flex items-center" onSubmit={handleComment}>
             <input
@@ -318,7 +289,7 @@ const Post: React.FC<PostProps> = ({
               className="flex-1 text-sm border-none focus:ring-0 focus:outline-none"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              onFocus={() => trackInteraction('comment_input_focus', postId, username)}
+              onFocus={async () => await trackInteraction('comment_input_focus', postId, username)}
             />
             {comment.length > 0 && (
               <button 

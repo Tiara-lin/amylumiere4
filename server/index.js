@@ -6,17 +6,18 @@ import { MongoClient } from 'mongodb';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT ?? 8080;
+const PORT = process.env.PORT || 3001;
 
-// ✅ CORS 設定（放最前面）
+// ✅ 正確 CORS 設定 (含預檢保險 + header 覆寫保險)
 const corsOptions = {
   origin: 'https://tiara-lin.github.io',
   credentials: true
 };
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // 處理 preflight request
 
-// ✅ 手動 header 覆寫保險（緊接在 cors 之後）
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
+// ⚡️ 額外保險，覆寫 header
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'https://tiara-lin.github.io');
   res.header('Access-Control-Allow-Credentials', 'true');
@@ -25,17 +26,16 @@ app.use((req, res, next) => {
   next();
 });
 
-// ✅ 放在 header 設定後
 app.use(express.json());
 
-// ✅ MongoDB 初始化
+// MongoDB connection
 let db;
-const client = new MongoClient(process.env.MONGODB_URI);
+const client = new MongoClient(process.env.MONGODB_URI || 'mongodb://localhost:27017');
 
 async function connectToMongoDB() {
   try {
     await client.connect();
-    db = client.db(process.env.DB_NAME || 'instagram_analytics');
+    db = client.db('instagram_analytics');
     console.log('✅ Connected to MongoDB');
 
     await db.collection('user_interactions').createIndex({ timestamp: -1 });
@@ -44,16 +44,15 @@ async function connectToMongoDB() {
     await db.collection('user_sessions').createIndex({ ip_address: 1 });
     await db.collection('user_sessions').createIndex({ session_start: -1 });
   } catch (error) {
-    console.error('❌ MongoDB connection error:', error);
-    throw error;
+    console.error('MongoDB connection error:', error);
   }
 }
 
 function getClientIP(req) {
   return (
     req.headers['x-forwarded-for'] ||
-    req.connection?.remoteAddress ||
-    req.socket?.remoteAddress ||
+    req.connection.remoteAddress ||
+    req.socket.remoteAddress ||
     req.ip
   );
 }
@@ -70,22 +69,23 @@ function getDeviceInfo(req) {
   };
 }
 
-// ✅ API 路由
 app.post('/api/track/session', async (req, res) => {
   try {
     const ip_address = getClientIP(req);
     const device_info = getDeviceInfo(req);
-    const { page_url } = req.body;
+    const { page_url, uuid } = req.body;
 
     const sessionData = {
       ip_address,
       session_start: new Date(),
       page_url,
+      uuid,
       ...device_info,
       session_id: `${ip_address}_${Date.now()}`
     };
 
     await db.collection('user_sessions').insertOne(sessionData);
+
     res.json({ success: true, session_id: sessionData.session_id });
   } catch (error) {
     console.error('Session tracking error:', error);
@@ -97,9 +97,12 @@ app.post('/api/track/interaction', async (req, res) => {
   try {
     const ip_address = getClientIP(req);
     const device_info = getDeviceInfo(req);
-    const { action_type, post_id, post_username, session_id, additional_data } = req.body;
+    const { action_type, post_id, post_username, session_id, additional_data, uuid } = req.body;
+
+    console.log('✅ Received interaction:', req.body);
 
     const interactionData = {
+      uuid,
       ip_address,
       action_type,
       post_id,
@@ -111,6 +114,7 @@ app.post('/api/track/interaction', async (req, res) => {
     };
 
     await db.collection('user_interactions').insertOne(interactionData);
+
     res.json({ success: true, message: 'Interaction tracked successfully' });
   } catch (error) {
     console.error('Interaction tracking error:', error);
@@ -122,9 +126,10 @@ app.post('/api/track/post-view', async (req, res) => {
   try {
     const ip_address = getClientIP(req);
     const device_info = getDeviceInfo(req);
-    const { post_id, post_username, session_id, view_duration, scroll_percentage, media_type } = req.body;
+    const { post_id, post_username, session_id, view_duration, scroll_percentage, media_type, uuid } = req.body;
 
     const viewData = {
+      uuid,
       ip_address,
       action_type: 'post_view',
       post_id,
@@ -138,6 +143,7 @@ app.post('/api/track/post-view', async (req, res) => {
     };
 
     await db.collection('user_interactions').insertOne(viewData);
+
     res.json({ success: true, message: 'Post view tracked successfully' });
   } catch (error) {
     console.error('Post view tracking error:', error);
@@ -145,6 +151,7 @@ app.post('/api/track/post-view', async (req, res) => {
   }
 });
 
+// 🔹 統計 final_max_scroll
 app.get('/api/session/scroll-stats', async (req, res) => {
   try {
     const scrolls = await db.collection('user_interactions').aggregate([
@@ -154,18 +161,21 @@ app.get('/api/session/scroll-stats', async (req, res) => {
           _id: null,
           avgScroll: { $avg: '$additional_data.max_scroll_percentage' },
           maxScroll: { $max: '$additional_data.max_scroll_percentage' },
-          count: { $sum: 1 }
+          count: { $sum: 1 },
+          uuids: { $addToSet: '$uuid' } // ✅ 加入 uuid 清單
         }
       }
     ]).toArray();
 
-    const result = scrolls[0] || { avgScroll: 0, maxScroll: 0, count: 0 };
+    const result = scrolls[0] || { avgScroll: 0, maxScroll: 0, count: 0, uuids: [] };
+
     res.json({
       success: true,
       data: {
         average_max_scroll: result.avgScroll,
         highest_max_scroll: result.maxScroll,
-        total_sessions: result.count
+        total_sessions: result.count,
+        uuids: result.uuids.filter(Boolean) // ✅ 過濾掉 null 值
       }
     });
   } catch (error) {
@@ -174,6 +184,8 @@ app.get('/api/session/scroll-stats', async (req, res) => {
   }
 });
 
+
+// 🔹 多篇貼文 stats
 app.get('/api/posts/stats', async (req, res) => {
   try {
     const ids = req.query.ids?.split(',').map(id => id.trim()).filter(Boolean);
@@ -214,46 +226,19 @@ app.get('/api/posts/stats', async (req, res) => {
   }
 });
 
-// ✅ 健康檢查
-app.get('/api/health', async (req, res) => {
-  try {
-    const result = await db.listCollections().toArray();
-    res.json({ success: true, collections: result.length, timestamp: new Date() });
-  } catch (err) {
-    res.status(503).json({ success: false, error: 'MongoDB not responding', detail: err.message });
-  }
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({ success: true, mongodb_connected: !!db, timestamp: new Date() });
 });
 
-// ⛔️ SIGINT shutdown
+// Start server
+app.listen(PORT, async () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  await connectToMongoDB();
+});
+
 process.on('SIGINT', async () => {
-  console.log('🛑 Gracefully shutting down...');
+  console.log('Shutting down...');
   await client.close();
   process.exit(0);
 });
-
-// ✅ 啟動伺服器
-async function startServer() {
-  try {
-    console.log('🔌 Connecting to MongoDB...');
-    await connectToMongoDB();
-    console.log('🚀 Starting Express...');
-    app.listen(PORT, () => {
-      console.log(`✅ Server running on port ${PORT}`);
-    });
-  } catch (error) {
-    console.error('❌ Failed to start server:', error);
-    process.exit(1);
-  }
-}
-
-startServer();
-
-// ✅ 建議加入更明確的錯誤監聽（避免 crash 無回應）
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('🚨 Unhandled Rejection at:', promise, 'reason:', reason);
-});
-
-process.on('uncaughtException', (err) => {
-  console.error('🔥 Uncaught Exception:', err);
-});
-

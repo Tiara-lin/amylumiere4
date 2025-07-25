@@ -1,8 +1,13 @@
 import React from 'react';
 import Post from './Post';
 import { posts } from '../data/posts';
+import { AnalyticsHook } from '../hooks/useAnalytics';
 
-const Feed: React.FC = () => {
+interface FeedProps {
+  analytics: AnalyticsHook;
+}
+
+const Feed: React.FC<FeedProps> = ({ analytics }) => {
   return (
     <div className="w-full max-w-[470px] mx-auto lg:mx-0">
       {posts.map((post) => (
@@ -16,6 +21,7 @@ const Feed: React.FC = () => {
           likes={post.likes}
           timestamp={post.timestamp}
           comments={post.comments}
+          analytics={analytics} // ✅ 傳遞給 Post 使用
         />
       ))}
     </div>
