@@ -27,9 +27,11 @@ export const useMaxScrollTracker = () => {
       console.log(`🚩 Triggered by ${reason}`);
 
       const sid = (window as any).sessionId || null;
+      const uuid = localStorage.getItem('uuid') || null; 
       console.log('🚩 using sessionId:', sid);
 
       const payload = JSON.stringify({
+        uuid,
         session_id: sid,
         action_type: 'final_max_scroll',
         additional_data: {
