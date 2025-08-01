@@ -18,227 +18,226 @@ export const posts: Post[] = [
   {
     "id": "1",
     "username": "beautyamy.ai",
-    "userImage": "https://i.ibb.co/ZRf9Rdrw/20250502-0208-image.png",
+    "userImage": "https://i.ibb.co/chMm3ncq/9.jpg",
     "location": "Paris, France",
     "media": {
       "type": "image",
-      "url": "https://i.ibb.co/ZpkzMsFF/1.png"
+      "url": "https://i.ibb.co/tPbhGfmr/1.jpg"
     },
-    "caption": "just a reminder—your softness is not a weakness. this body, this shape, this moment? all worth celebrating 🤍",
+    "caption": "Soft power. Quiet confidence. Real beauty.",
     "likes": 10343,
     "timestamp": "2 HOURS AGO",
     "comments": [
-      { "username": "bloom.sunday", "text": "This softness is a whole mood 🕊️" },
-      { "username": "bodymuse", "text": "Gentle power 💫" },
-      { "username": "dailyskin", "text": "She’s art. That’s it." },
-      { "username": "curveculture", "text": "Real bodies. Real beauty. ✨" },
-      { "username": "tender.lens", "text": "Every line tells a story 💭" },
-      { "username": "shapetruth", "text": "Who needs filters when you’re this honest?" },
-      { "username": "meltandglow", "text": "Power in presence. Period." },
-      { "username": "rootedlight", "text": "Your energy? Undeniable." },
-      { "username": "embracedit", "text": "Loving this softness in a loud world 💗" },
-      { "username": "wildfemme", "text": "Confidence looks good on you 🔥" }
+      { "username": "dylan_49", "text": "☀️☕" },
+      { "username": "ruby_59", "text": "Effortless and earned" },
+      { "username": "ben26", "text": "Rooted in light" },
+      { "username": "candy_61", "text": "No edits needed" },
+      { "username": "kevin53", "text": "Serenity queen" },
+      { "username": "lucy75", "text": "Courage is calm" },
+      { "username": "mia.59", "text": "Golden in motion" },
+      { "username": "rachel.09", "text": "Dream shape" },
+      { "username": "sara11", "text": "🎧🪑" },
+      { "username": "ryan80", "text": "🧷🌊" }
     ]
-
   },
   {
     "id": "2",
     "username": "beautyamy.ai",
-    "userImage": "https://i.ibb.co/ZRf9Rdrw/20250502-0208-image.png",
+    "userImage": "https://i.ibb.co/chMm3ncq/9.jpg",
     "location": "Paris, France",
     "media": {
       "type": "image",
-      "url": "https://i.ibb.co/RpdCz8Cc/2.png"
+      "url": "https://i.ibb.co/FL45n0FD/2.jpg"
     },
-    "caption": "No edits. No hiding. Just me, exactly as I am 🤍✨ Soft, strong, and owning every inch.",
+    "caption": "My shape doesn’t need fixing. It needs space.",
     "likes": 10020,
     "timestamp": "2025/05/01",
     "comments": [
-      { "username": "honestdays", "text": "This kind of realness is so needed." },
-      { "username": "sofi.roses", "text": "You’re literally glowing." },
-      { "username": "moodformonday", "text": "This caption gave me chills, in the best way." },
-      { "username": "luciegrams", "text": "No filters, just facts 💯" },
-      { "username": "stillwater.wave", "text": "Owning every inch. I felt that." },
-      { "username": "peachy.chai", "text": "Absolutely stunning and honest." },
-      { "username": "tuesdaycloud", "text": "You make confidence look effortless." },
-      { "username": "waveandwild", "text": "🔥🔥🔥" },
-      { "username": "notesbyliv", "text": "More of this energy please." },
-      { "username": "from.within", "text": "✨✨✨" }
+      { "username": "amy96", "text": "Soul peace" },
+      { "username": "dylan14", "text": "Quiet courage" },
+      { "username": "nate.19", "text": "Shape of strength" },
+      { "username": "amy26", "text": "Beauty: unfiltered" },
+      { "username": "rachel60", "text": "Air of magic" },
+      { "username": "zoe_43", "text": "Realness in frame" },
+      { "username": "sara_48", "text": "Flow state" },
+      { "username": "ruby_02", "text": "Stilled and centered" },
+      { "username": "leo.09", "text": "🌊✨" },
+      { "username": "mia_92", "text": "Unbothered grace" }
     ]
   },
-  { 
+  {
     "id": "3",
     "username": "beautyamy.ai",
-    "userImage": "https://i.ibb.co/ZRf9Rdrw/20250502-0208-image.png",
+    "userImage": "https://i.ibb.co/chMm3ncq/9.jpg",
     "location": "Tuscany, Italy",
     "media": {
-    "type": "video",
-    "url": "https://res.cloudinary.com/ddunt6myr/video/upload/v1747083233/video2_nrqjkk.mp4"
+      "type": "video",
+      "url": "https://res.cloudinary.com/ddunt6myr/video/upload/v1754024802/%E6%9C%AA%E5%91%BD%E5%90%8D_1024_x_1024_%E5%83%8F%E7%B4%A0_eikho6.mp4"
     },
-    "caption": "Some softness belongs in the wild. 🌾 Confidence isn’t loud — it’s present. And that’s more than enough.",
+    "caption": "I belong here. So does my body.",
     "likes": 9724,
     "timestamp": "2025/04/10",
     "comments": [
-      { "username": "curve.poetry", "text": "This is what freedom looks like 🌬️" },
-      { "username": "goldenaura", "text": "Soft curves, strong presence — I’m here for it." },
-      { "username": "dearskin", "text": "The calm energy is everything." },
-      { "username": "bareandbrave", "text": "You make peace look powerful." },
-      { "username": "wildgrace", "text": "She’s not hiding. She’s blooming." },
-      { "username": "glowarchive", "text": "Nature + body love = this moment 🤍" },
-      { "username": "bodybloom", "text": "Curves don’t need approval. They just need air." },
-      { "username": "earthtone.muse", "text": "Living art 🌾" },
-      { "username": "serenespace", "text": "This hits different. Quiet confidence >>" },
-      { "username": "sundayease", "text": "This softness feels revolutionary." }
+      { "username": "kevin10", "text": "🧘‍♀️🫶" },
+      { "username": "mark66", "text": "🥹✨" },
+      { "username": "tyler_29", "text": "🪞🌿" },
+      { "username": "mark76", "text": "💥📍" },
+      { "username": "zoe23", "text": "🌤️🪞" },
+      { "username": "leo36", "text": "Composed and whole" },
+      { "username": "nora65", "text": "Smile says everything" },
+      { "username": "faye18", "text": "Owning the now" },
+      { "username": "nate.55", "text": "Nourished inside" },
+      { "username": "nora_34", "text": "Tender terrain" }
     ]
   },
   {
     "id": "4",
     "username": "beautyamy.ai",
-    "userImage": "https://i.ibb.co/ZRf9Rdrw/20250502-0208-image.png",
+    "userImage": "https://i.ibb.co/chMm3ncq/9.jpg",
     "location": "Los Angeles, CA",
     "media": {
       "type": "image",
-      "url": "https://i.ibb.co/8DgDZCxR/4.png"
+      "url": "https://i.ibb.co/1fkDMJzH/4.jpg"
     },
-    "caption": "Just out here living, unapologetically. Confidence isn’t about shrinking — it’s about showing up.",
+    "caption": "Joy tastes better when you love yourself.",
     "likes": 11248,
     "timestamp": "2025/03/25",
-      "comments": [
-        { "username": "urban.curves", "text": "You’re redefining what power looks like 👏" },
-        { "username": "lightandcurve", "text": "Main character energy 💥" },
-        { "username": "dailybloom", "text": "Bold. Beautiful. Balanced." },
-        { "username": "softstreet", "text": "Body goals in motion!" },
-        { "username": "confidentandcozy", "text": "Real shape. Real life. Real fire." },
-        { "username": "citychic", "text": "Love this energy on a Monday." },
-        { "username": "essencevibe", "text": "Walking art 🖼️" },
-        { "username": "feelgoodlooks", "text": "This is how you wear confidence." },
-        { "username": "hercurvejourney", "text": "Just wow 🔥🔥" },
-        { "username": "breathe.and.glow", "text": "This made my whole feed better 💫" }
-      ]
+    "comments": [
+      { "username": "candy_31", "text": "She is poetry" },
+      { "username": "dan_55", "text": "Full stop beauty" },
+      { "username": "lily.11", "text": "🌸💪" },
+      { "username": "ruby.47", "text": "Chose self" },
+      { "username": "jess.16", "text": "🫶📸" },
+      { "username": "dylan.03", "text": "Glow in silence" },
+      { "username": "tyler94", "text": "Kind to her shape" },
+      { "username": "candy82", "text": "Joy on display" },
+      { "username": "tyler_10", "text": "Gentle and firm" },
+      { "username": "lucy_15", "text": "🌁👣" }
+    ]
   },
   {
     "id": "5",
     "username": "beautyamy.ai",
-    "userImage": "https://i.ibb.co/ZRf9Rdrw/20250502-0208-image.png",
+    "userImage": "https://i.ibb.co/chMm3ncq/9.jpg",
     "location": "Barcelona, Spain",
     "media": {
       "type": "image",
-      "url": "https://i.ibb.co/yFKk6Hd5/5.png"
+      "url": "https://i.ibb.co/Lh5M77zV/5.jpg"
     },
-    "caption": "Some days it’s just about feeling good in your own skin. This is one of those days 🤍",
+    "caption": "I don’t fit in a frame—I redefine it.",
     "likes": 10877,
     "timestamp": "2025/03/01",
     "comments": [
-      { "username": "bloom.essence", "text": "Confidence looks gorgeous on you." },
-      { "username": "softlightdiary", "text": "That glow from within ✨" },
-      { "username": "curvecollective", "text": "She said comfort and served confidence." },
-      { "username": "dailydrape", "text": "Stunning and so real." },
-      { "username": "venusonrepeat", "text": "Body built like poetry 🔥" },
-      { "username": "silkandskin", "text": "The way you own the room tho 😍" },
-      { "username": "herdepth", "text": "You're literally the soft girl era 🌷" },
-      { "username": "everyinchher", "text": "Every curve tells a story — and this one speaks peace." },
-      { "username": "morningframes", "text": "Love the calm power in this." },
-      { "username": "wildnserene", "text": "You in this light? Just wow." }
+      { "username": "leo68", "text": "Unshaken beauty" },
+      { "username": "rachel_96", "text": "Moves like music" },
+      { "username": "mia.72", "text": "🍂✨" },
+      { "username": "dan49", "text": "🖼️🌼" },
+      { "username": "ruby_96", "text": "Free and framed" },
+      { "username": "sophie59", "text": "Space holder" },
+      { "username": "lucy.54", "text": "🔥🧡" },
+      { "username": "ben.55", "text": "Eyes tell her story" },
+      { "username": "mia_58", "text": "🌾🧡" },
+      { "username": "hana54", "text": "Infinite curve" }
     ]
   },
-  { 
+  {
     "id": "6",
     "username": "beautyamy.ai",
-    "userImage": "https://i.ibb.co/ZRf9Rdrw/20250502-0208-image.png",
+    "userImage": "https://i.ibb.co/chMm3ncq/9.jpg",
     "location": "Amsterdam, Netherlands",
     "media": {
       "type": "image",
-      "url": "https://i.ibb.co/JwsXgRTq/6.png"
+      "url": "https://i.ibb.co/0RwvcTR9/6.jpg"
     },
-    "caption": "Even the softest glow can hold the strongest presence.",
+    "caption": "I carry the softness the world needs.",
     "likes": 10594,
     "timestamp": "2025/02/05",
     "comments": [
-      { "username": "sundaysmooth", "text": "You look amazing here 😍" },
-      { "username": "realcurves", "text": "Loving the soft glam and those curves!" },
-      { "username": "coffeewithglow", "text": "So elegant yet strong 🕊️" },
-      { "username": "huggedinlight", "text": "Ugh you’re glowing" },
-      { "username": "curvecoded", "text": "A whole vibe 🔥" },
-      { "username": "lighttide", "text": "Literally perfect" },
-      { "username": "roomlightlove", "text": "Soft beauty 🫶" },
-      { "username": "warmhugz", "text": "Curvy queen energy" },
-      { "username": "lowlightmood", "text": "This dress was made for you 💫" },
-      { "username": "glowbasics", "text": "Can’t stop staring tbh" }
+      { "username": "luke56", "text": "💗🧘" },
+      { "username": "candy.17", "text": "Walking her worth" },
+      { "username": "dylan_86", "text": "Owns the frame" },
+      { "username": "leo_39", "text": "Confidence sits well" },
+      { "username": "rachel.75", "text": "Built like poetry" },
+      { "username": "faye52", "text": "🌅📘" },
+      { "username": "ella_01", "text": "Proud in posture" },
+      { "username": "sophie48", "text": "🎧💡" },
+      { "username": "nate.46", "text": "Built to bloom" },
+      { "username": "ruby.52", "text": "Undeniably her" }
     ]
   },
   {
     "id": "7",
     "username": "beautyamy.ai",
-    "userImage": "https://i.ibb.co/ZRf9Rdrw/20250502-0208-image.png",
+    "userImage": "https://i.ibb.co/chMm3ncq/9.jpg",
     "location": "Berlin, Germany",
     "media": {
       "type": "image",
-      "url": "https://i.ibb.co/rKVP2NQx/20250501-2341-image.png"
+      "url": "https://i.ibb.co/yn7YDxCM/7.jpg"
     },
-     "caption": "Chose confidence, not filters. Real curves, real light, real me.",
+    "caption": "Strong doesn’t mean shrinking your shine.",
     "likes": 9962,
     "timestamp": "2025/01/02",
     "comments": [
-      { "username": "glowline", "text": "Serving natural glow 🔥" },
-      { "username": "urbanmuse", "text": "That soft light and bold energy? Yes please." },
-      { "username": "curveecho", "text": "Loving how unapologetic this is 💖" },
-      { "username": "carlavibes", "text": "Gorgeous AND grounded" },
-      { "username": "dayflow", "text": "The way you take up space is beautiful." },
-      { "username": "eveningframe", "text": "This is what self-love in motion looks like." },
-      { "username": "shadesoul", "text": "Confident and calm. Perfection." },
-      { "username": "highvibe", "text": "✨✨✨" },
-      { "username": "bodytruths", "text": "This is the kind of representation we need." },
-      { "username": "slowdaydream", "text": "Soft but fierce, just how I like it." }
+      { "username": "faye80", "text": "Full spectrum" },
+      { "username": "faye42", "text": "Curve confidence" },
+      { "username": "ella78", "text": "Soft doesn’t fold" },
+      { "username": "dylan.78", "text": "Golden moment" },
+      { "username": "amy_11", "text": "Fierce with ease" },
+      { "username": "candy17", "text": "Truth in tension" },
+      { "username": "nate.17", "text": "Power = presence" },
+      { "username": "sara_18", "text": "Truly radiant" },
+      { "username": "kevin09", "text": "Her strength is soft" },
+      { "username": "mia24", "text": "Every piece fits" }
     ]
   },
   {
     "id": "8",
     "username": "beautyamy.ai",
-    "userImage": "https://i.ibb.co/ZRf9Rdrw/20250502-0208-image.png",
+    "userImage": "https://i.ibb.co/chMm3ncq/9.jpg",
     "location": "Lake Como, Italy",
     "media": {
       "type": "image",
-      "url": "https://i.ibb.co/ZRf9Rdrw/20250502-0208-image.png"
+      "url": "https://i.ibb.co/xtzmc1n5/8.jpg"
     },
-    "caption": "Soft breeze, soft dress, strong body. This is peace. 🌊",
+    "caption": "Every curve holds power and peace.",
     "likes": 12031,
     "timestamp": "2024/11/25",
     "comments": [
-      { "username": "marinasun", "text": "You belong in this light." },
-      { "username": "curveloveclub", "text": "Curves and calm vibes 😍" },
-      { "username": "shorelinesoul", "text": "Living for this whole mood." },
-      { "username": "sundayout", "text": "You look so comfy and confident 🤍" },
-      { "username": "driftandshine", "text": "Omg this is giving goddess by the dock." },
-      { "username": "realform", "text": "This is what beauty looks like." },
-      { "username": "sailandskin", "text": "Boat views and body goals 🔥" },
-      { "username": "moonwake", "text": "Something about this just feels right." },
-      { "username": "notetoher", "text": "Soft but unmissable ✨" },
-      { "username": "dailydrip", "text": "Absolutely glowing, wow." }
+      { "username": "zoe.11", "text": "Peace posture" },
+      { "username": "lily.04", "text": "Elegant always" },
+      { "username": "dan.23", "text": "Power in pause" },
+      { "username": "jake_05", "text": "Dressed in light" },
+      { "username": "sophie_31", "text": "Balanced energy" },
+      { "username": "mia26", "text": "🌿💭" },
+      { "username": "dylan.95", "text": "Simplicity wins" },
+      { "username": "sara.23", "text": "Muse in motion" },
+      { "username": "zoe_60", "text": "📷🔊" },
+      { "username": "jess_08", "text": "📖☀️" }
     ]
   },
   {
     "id": "9",
     "username": "beautyamy.ai",
-    "userImage": "https://i.ibb.co/ZRf9Rdrw/20250502-0208-image.png",
+    "userImage": "https://i.ibb.co/chMm3ncq/9.jpg",
     "location": "Malibu Beach, CA",
     "media": {
       "type": "image",
-      "url": "https://i.ibb.co/ymrtbRp6/8.png"
+      "url": "https://i.ibb.co/chMm3ncq/9.jpg"
     },
-     "caption": "Sun, salt, and self-love. This body belongs here. ☀️🌊",
+    "caption": "My body holds stories, not standards.",
     "likes": 12783,
     "timestamp": "2024/08/30",
     "comments": [
-      { "username": "sunwarmth", "text": "You look so at home by the sea 🐚" },
-      { "username": "coastalbreeze", "text": "That glow hits different 🔥" },
-      { "username": "softsundays", "text": "Confidence looks amazing on you" },
-      { "username": "saltyandfree", "text": "Honestly? Iconic." },
-      { "username": "beachlight", "text": "💖☀️🌊" },
-      { "username": "goldenhaze", "text": "This energy is everything" },
-      { "username": "tidelove", "text": "Yes to all of this ✨" },
-      { "username": "wavetide", "text": "That caption tho 💯" },
-      { "username": "sunandskin", "text": "😍😍" },
-      { "username": "curvesandcalm", "text": "Living your truth. We love to see it." }
+      { "username": "ben.70", "text": "Everything flows" },
+      { "username": "ivy_72", "text": "Soft fire" },
+      { "username": "tyler93", "text": "Calm and bold" },
+      { "username": "ryan93", "text": "Story in curves" },
+      { "username": "kevin.39", "text": "📍present" },
+      { "username": "dan.36", "text": "🛋️🌤️" },
+      { "username": "luke.41", "text": "She holds calm" },
+      { "username": "matt.19", "text": "Shadow and shine" },
+      { "username": "sara.68", "text": "🧷🧧" },
+      { "username": "mark12", "text": "This is worth it" }
     ]
-  },
+  }
 ];
