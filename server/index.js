@@ -35,8 +35,9 @@ const client = new MongoClient(process.env.MONGODB_URI || 'mongodb://localhost:2
 async function connectToMongoDB() {
   try {
     await client.connect();
-    db = client.db('instagram_analytics');
-    console.log('✅ Connected to MongoDB');
+    db = client.db(process.env.DB_NAME);
+    console.log(`✅ Connected to DB: ${process.env.DB_NAME}`);
+
 
     await db.collection('user_interactions').createIndex({ timestamp: -1 });
     await db.collection('user_interactions').createIndex({ ip_address: 1 });
