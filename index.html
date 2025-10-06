@@ -73,5 +73,34 @@
         });
       })();
     </script>
+
+    <!-- (必做) 強制更新到最新 Service Worker，避免舊 SW 殘留載入 reCAPTCHA -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations()
+          .then(regs => regs.forEach(r => r.update()))
+          .catch(() => {});
+      }
+    </script>
+
+    <!-- (可選保險) 前端攔截任何動態插入的 reCAPTCHA script/iframe -->
+    <script>
+      (function(){
+        const origCreate = document.createElement;
+        document.createElement = function(tag){
+          const el = origCreate.call(document, tag);
+          const setSrc = (p, v) => {
+            if (typeof v === 'string' && /recaptcha/.test(v)) return true; // 阻擋
+            el[p] = v; return true;
+          };
+          if (tag === 'script' || tag === 'iframe') {
+            return new Proxy(el, {
+              set(t, p, v){ return (p === 'src' || p === 'srcdoc') ? setSrc(p, v) : (t[p] = v, true); }
+            });
+          }
+          return el;
+        };
+      })();
+    </script>
   </body>
 </html>
