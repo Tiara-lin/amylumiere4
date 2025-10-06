@@ -10,5 +10,68 @@
   </head>
   <body>
     <div id="root"></div>
+
+    <!-- Qualtrics iframe integration: UUID echo + auto-resize + scroll-bottom -->
+    <script>
+      (function () {
+        var TARGET_ORIGIN = "https://tassel.syd1.qualtrics.com"; // your Qualtrics domain
+
+        function getParam(name) {
+          var m = new RegExp('[?&]' + name + '=([^&]*)').exec(location.search);
+          return m ? decodeURIComponent(m[1]) : '';
+        }
+        function isUUIDv4(x) {
+          return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(x);
+        }
+        function post(msg) {
+          try { parent.postMessage(msg, TARGET_ORIGIN); }
+          catch (e) { parent.postMessage(msg, "*"); }
+        }
+
+        // ① echo UUID back to Qualtrics
+        var pid = getParam('pid') || '';
+        post({ type: 'uuid-echo', pid: pid, valid: isUUIDv4(pid) });
+
+        // ② auto-resize iframe to content height
+        function sendSize() {
+          var h = Math.max(
+            document.body.scrollHeight, document.documentElement.scrollHeight,
+            document.body.offsetHeight, document.documentElement.offsetHeight,
+            document.body.clientHeight, document.documentElement.clientHeight
+          );
+          post({ type: 'resize-iframe', height: h });
+        }
+        window.addEventListener('load', sendSize);
+        try { new ResizeObserver(sendSize).observe(document.body); }
+        catch (_) { setInterval(sendSize, 800); }
+
+        // ③ detect scrolled-to-bottom (once)
+        function atBottom() {
+          return (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 2);
+        }
+        var throttled = false;
+        function onScroll() {
+          if (throttled) return;
+          throttled = true;
+          setTimeout(function () {
+            throttled = false;
+            if (atBottom()) {
+              post({ type: 'scrolled-bottom' });
+              window.removeEventListener('scroll', onScroll);
+            }
+          }, 200);
+        }
+        window.addEventListener('scroll', onScroll);
+        // very short pages (no scroll) – treat as bottom
+        window.addEventListener('load', function () {
+          setTimeout(function () {
+            if (atBottom()) {
+              post({ type: 'scrolled-bottom' });
+              window.removeEventListener('scroll', onScroll);
+            }
+          }, 300);
+        });
+      })();
+    </script>
   </body>
 </html>
