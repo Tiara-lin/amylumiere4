@@ -5,15 +5,25 @@
     <link rel="icon" type="image/svg+xml" href="/amylumiere4/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Instagram Interface Clone</title>
+
+    <!-- （可選）預連線常見圖片來源，加速首包 -->
+    <link rel="preconnect" href="https://images.pexels.com" />
+    <link rel="dns-prefetch" href="https://images.pexels.com" />
+    <link rel="preconnect" href="https://i.ibb.co" />
+    <link rel="dns-prefetch" href="https://i.ibb.co" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
 
-    <!-- Qualtrics iframe integration: UUID echo + auto-resize + scroll-bottom -->
+    <!-- Qualtrics iframe integration: UUID echo + throttled auto-resize + bottom-detect -->
     <script>
       (function () {
-        var TARGET_ORIGIN = "https://tassel.syd1.qualtrics.com"; // your Qualtrics domain
+        // ==== 自動偵測父頁（Qualtrics）來源 ====
+        var parentOrigin = (function () {
+          try { return new URL(document.referrer).origin || "*"; }
+          catch (e) { return "*"; }
+        })();
 
         function getParam(name) {
           var m = new RegExp('[?&]' + name + '=([^&]*)').exec(location.search);
@@ -23,53 +33,115 @@
           return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(x);
         }
         function post(msg) {
-          try { parent.postMessage(msg, TARGET_ORIGIN); }
+          try { parent.postMessage(msg, parentOrigin); }
           catch (e) { parent.postMessage(msg, "*"); }
         }
 
-        // ① echo UUID back to Qualtrics
+        // ① 回傳 UUID 給父頁（供驗證/記錄）
         var pid = getParam('pid') || '';
         post({ type: 'uuid-echo', pid: pid, valid: isUUIDv4(pid) });
 
-        // ② auto-resize iframe to content height
-        function sendSize() {
-          var h = Math.max(
-            document.body.scrollHeight, document.documentElement.scrollHeight,
-            document.body.offsetHeight, document.documentElement.offsetHeight,
-            document.body.clientHeight, document.documentElement.clientHeight
-          );
-          post({ type: 'resize-iframe', height: h });
+        // ② 自動回報頁高（節流）
+        var pending = false, lastH = 0, lastSent = 0;
+        function computeHeight() {
+          return Math.max(
+            document.documentElement.scrollHeight,
+            document.body ? document.body.scrollHeight : 0
+          ) | 0;
         }
-        window.addEventListener('load', sendSize);
-        try { new ResizeObserver(sendSize).observe(document.body); }
-        catch (_) { setInterval(sendSize, 800); }
+        function postHeight(immediate) {
+          if (pending && !immediate) return;
+          pending = true;
+          requestAnimationFrame(function () {
+            var h = computeHeight();
+            var now = performance.now();
+            // 高度變化 >=10px 或距上次 >=300ms 才回報，避免 reflow 風暴
+            if (Math.abs(h - lastH) >= 10 || (now - lastSent) >= 300) {
+              lastH = h; lastSent = now;
+              post({ type: 'mockup:height', height: h });
+            }
+            pending = false;
+          });
+        }
 
-        // ③ detect scrolled-to-bottom (once)
-        function atBottom() {
-          return (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 2);
+        window.addEventListener('load', function () {
+          // 初次與延後補報（字體/圖片載入完成後）
+          postHeight(true);
+          setTimeout(function () { postHeight(true); }, 250);
+          setTimeout(function () { postHeight(true); }, 800);
+        });
+
+        try {
+          new ResizeObserver(function () { postHeight(false); })
+            .observe(document.documentElement);
+        } catch (e) {
+          // 舊環境 fallback
+          setInterval(function () { postHeight(false); }, 500);
         }
-        var throttled = false;
+
+        // ③ 偵測滑到底（只觸發一次，且節流）
+        function atBottom() {
+          return (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 2);
+        }
+        var bottomNotified = false, scrollTick = false;
         function onScroll() {
-          if (throttled) return;
-          throttled = true;
-          setTimeout(function () {
-            throttled = false;
+          if (bottomNotified || scrollTick) return;
+          scrollTick = true;
+          requestAnimationFrame(function () {
+            scrollTick = false;
             if (atBottom()) {
+              bottomNotified = true;
               post({ type: 'scrolled-bottom' });
               window.removeEventListener('scroll', onScroll);
             }
-          }, 200);
+          });
         }
-        window.addEventListener('scroll', onScroll);
-        // very short pages (no scroll) – treat as bottom
+        window.addEventListener('scroll', onScroll, { passive: true });
+
+        // 沒有捲動空間的小頁面（render 穩定後再判一次）
         window.addEventListener('load', function () {
           setTimeout(function () {
-            if (atBottom()) {
+            if (!bottomNotified && atBottom()) {
+              bottomNotified = true;
               post({ type: 'scrolled-bottom' });
               window.removeEventListener('scroll', onScroll);
             }
           }, 300);
         });
+      })();
+    </script>
+
+    <!-- (必做) 強制更新到最新 Service Worker，避免舊 SW 殘留載入第三方資源 -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations()
+          .then(function (regs) { regs.forEach(function (r) { try { r.update(); } catch (_) {} }); })
+          .catch(function () {});
+      }
+    </script>
+
+    <!-- (可選) 防呆：攔截動態插入的 reCAPTCHA script/iframe（若你的頁面不需要 Google 服務） -->
+    <script>
+      (function(){
+        var origCreate = document.createElement;
+        document.createElement = function(tag){
+          var el = origCreate.call(document, tag);
+          function setSrc(p, v){
+            if (typeof v === 'string' && /recaptcha/i.test(v)) {
+              // 阻擋插入 reCAPTCHA
+              return true;
+            }
+            el[p] = v; return true;
+          }
+          if (tag === 'script' || tag === 'iframe') {
+            return new Proxy(el, {
+              set: function (t, p, v) {
+                return (p === 'src' || p === 'srcdoc') ? setSrc(p, v) : (t[p] = v, true);
+              }
+            });
+          }
+          return el;
+        };
       })();
     </script>
   </body>

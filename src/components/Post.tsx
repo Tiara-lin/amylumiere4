@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal, Play, Volume2, VolumeX } from 'lucide-react';
 import { useAnalytics } from '../hooks/useAnalytics';
-import { AnalyticsHook } from '../hooks/useAnalytics';
+import type { AnalyticsHook } from '../hooks/useAnalytics';
 
 interface Comment {
   username: string;
@@ -10,18 +10,18 @@ interface Comment {
 
 interface PostProps {
   username: string;
-  userImage: string;
+  userImage: string; // avatar
   location?: string;
   media?: {
     type: 'image' | 'video';
     url: string;
-    thumbnail?: string;
+    thumbnail?: string; // 建議給影片封面
   };
   caption: string;
   likes: number;
   timestamp: string;
   comments: Comment[];
-  analytics: AnalyticsHook;
+  analytics?: AnalyticsHook; // ← 改成可選，避免 Feed 傳/不傳都出錯
 }
 
 const Post: React.FC<PostProps> = ({
@@ -40,33 +40,40 @@ const Post: React.FC<PostProps> = ({
   const [showAllComments, setShowAllComments] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const postRef = useRef<HTMLDivElement>(null);
   const viewStartTime = useRef<number>(Date.now());
   const hasTrackedView = useRef(false);
-  
-  const { ensureSession, trackInteraction, trackPostView } = useAnalytics(); 
+
+  const { ensureSession, trackInteraction, trackPostView } = useAnalytics();
   const postId = `${username}_${caption.slice(0, 20).replace(/\s+/g, '_')}`;
 
+  // ---- 計算安全的顯示模式與來源（避免資料缺漏導致整卡壞掉）----
+  const mediaType: 'image' | 'video' =
+    media?.type === 'video' || media?.type === 'image' ? media.type : 'image';
+
+  const imageSrc =
+    mediaType === 'image'
+      ? (media?.url && media.url.trim()) || userImage // 圖片優先 media.url，缺就退回 avatar
+      : undefined;
+
+  const videoSrc = mediaType === 'video' ? media?.url : undefined;
+  const videoPoster = media?.thumbnail || undefined;
+
+  // ------------------ 互動行為 ------------------
   const handleLike = async () => {
     const newLikedState = !isLiked;
     setIsLiked(newLikedState);
-    await trackInteraction(
-      newLikedState ? 'like' : 'unlike', 
-      postId, 
-      username,
-      { previous_likes: likes }
-    );
+    await trackInteraction(newLikedState ? 'like' : 'unlike', postId, username, {
+      previous_likes: likes,
+    });
   };
 
   const handleSave = async () => {
     const newSavedState = !isSaved;
     setIsSaved(newSavedState);
-    await trackInteraction(
-      newSavedState ? 'save' : 'unsave', 
-      postId, 
-      username
-    );
+    await trackInteraction(newSavedState ? 'save' : 'unsave', postId, username);
   };
 
   const handleShare = async () => {
@@ -79,10 +86,9 @@ const Post: React.FC<PostProps> = ({
     if (comment.trim()) {
       await trackInteraction('comment', postId, username, {
         comment_text: comment,
-        comment_length: comment.length
+        comment_length: comment.length,
       });
       setComment('');
-      console.log('Comment posted:', comment);
     }
   };
 
@@ -91,36 +97,30 @@ const Post: React.FC<PostProps> = ({
     setShowAllComments(newShowAllState);
     if (newShowAllState) {
       await trackInteraction('view_all_comments', postId, username, {
-        total_comments: comments.length
+        total_comments: comments.length,
       });
     }
   };
 
   const togglePlay = async () => {
-    if (videoRef.current) {
-      const newPlayingState = !isPlaying;
-      if (newPlayingState) {
-        videoRef.current.play();
-        await trackInteraction('play_video', postId, username);
-      } else {
-        videoRef.current.pause();
-        await trackInteraction('pause_video', postId, username);
-      }
-      setIsPlaying(newPlayingState);
+    if (!videoRef.current) return;
+    const newPlayingState = !isPlaying;
+    if (newPlayingState) {
+      await videoRef.current.play();
+      await trackInteraction('play_video', postId, username);
+    } else {
+      videoRef.current.pause();
+      await trackInteraction('pause_video', postId, username);
     }
+    setIsPlaying(newPlayingState);
   };
 
   const toggleMute = async () => {
-    if (videoRef.current) {
-      const newMutedState = !isMuted;
-      videoRef.current.muted = newMutedState;
-      setIsMuted(newMutedState);
-      await trackInteraction(
-        newMutedState ? 'mute_video' : 'unmute_video', 
-        postId, 
-        username
-      );
-    }
+    if (!videoRef.current) return;
+    const newMutedState = !isMuted;
+    videoRef.current.muted = newMutedState;
+    setIsMuted(newMutedState);
+    await trackInteraction(newMutedState ? 'mute_video' : 'unmute_video', postId, username);
   };
 
   const handleMediaDoubleClick = async () => {
@@ -128,12 +128,13 @@ const Post: React.FC<PostProps> = ({
     await trackInteraction('double_tap_like', postId, username);
   };
 
+  // ------------------ 檢視追蹤 ------------------
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach(async (entry) => {
           if (entry.isIntersecting && !hasTrackedView.current) {
-            await ensureSession();  // ✅ 確保 session 建立（含 UUID）
+            await ensureSession(); // 確保 session/UUID
             hasTrackedView.current = true;
             viewStartTime.current = Date.now();
           } else if (!entry.isIntersecting && hasTrackedView.current) {
@@ -146,7 +147,7 @@ const Post: React.FC<PostProps> = ({
               username,
               viewDuration,
               Math.abs(scrollPercentage),
-              (media?.type as 'image' | 'video') || 'image'  // ✅ 修正重點：強制轉型
+              mediaType
             );
           }
         });
@@ -154,11 +155,13 @@ const Post: React.FC<PostProps> = ({
       { threshold: 0.5 }
     );
 
-    if (postRef.current) observer.observe(postRef.current);
+    const node = postRef.current;
+    if (node) observer.observe(node);
     return () => {
-      if (postRef.current) observer.unobserve(postRef.current);
+      if (node) observer.unobserve(node);
+      observer.disconnect();
     };
-  }, [postId, username, media?.type, trackPostView, ensureSession]);
+  }, [postId, username, mediaType, trackPostView, ensureSession]);
 
   const displayedComments = showAllComments ? comments : comments.slice(0, 2);
 
@@ -168,79 +171,107 @@ const Post: React.FC<PostProps> = ({
       <div className="flex items-center justify-between p-3">
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 rounded-full overflow-hidden">
-            <img src={userImage} alt={username} className="w-full h-full object-cover" />
+            <img
+              src={userImage}
+              alt={username}
+              className="w-full h-full object-cover"
+              loading="lazy"
+              decoding="async"
+              draggable={false}
+            />
           </div>
           <div>
             <p className="font-semibold text-sm">{username}</p>
             {location && <p className="text-xs text-gray-500">{location}</p>}
           </div>
         </div>
-        <MoreHorizontal 
-          className="h-5 w-5 text-gray-500 cursor-pointer" 
+        <MoreHorizontal
+          className="h-5 w-5 text-gray-500 cursor-pointer"
           onClick={async () => await trackInteraction('menu_click', postId, username)}
         />
       </div>
 
       {/* Media */}
-      {media && (
-        <div className="w-full aspect-square bg-black flex items-center justify-center overflow-hidden relative">
-          {media.type === 'image' ? (
-            <img 
-              src={media.url} 
-              alt="Post" 
+      <div className="w-full aspect-square bg-black flex items-center justify-center overflow-hidden relative">
+        {/* 1) 有圖片就顯示圖片（優先 media.url，否則退回 avatar） */}
+        {mediaType === 'image' && imageSrc ? (
+          <img
+            src={imageSrc}
+            alt="Post"
+            className="w-full h-full object-cover"
+            onDoubleClick={handleMediaDoubleClick}
+            loading="lazy"
+            decoding="async"
+            draggable={false}
+          />
+        ) : null}
+
+        {/* 2) 有影片且有 URL 才顯示影片 */}
+        {mediaType === 'video' && videoSrc ? (
+          <div className="relative w-full h-full" onClick={togglePlay}>
+            <video
+              ref={videoRef}
+              src={videoSrc}
+              poster={videoPoster}
               className="w-full h-full object-cover"
-              onDoubleClick={handleMediaDoubleClick}
+              loop
+              muted={isMuted}
+              playsInline            // iOS 避免自動全螢幕
+              preload="metadata"     // 只抓首幀/長度，不整段下載
+              onPlay={() => setIsPlaying(true)}
+              onPause={() => setIsPlaying(false)}
             />
-          ) : (
-            <div className="relative w-full h-full" onClick={togglePlay}>
-              <video
-                ref={videoRef}
-                src={media.url}
-                poster={media.thumbnail}
-                className="w-full h-full object-cover"
-                loop
-                muted={isMuted}
-                onPlay={() => setIsPlaying(true)}
-                onPause={() => setIsPlaying(false)}
-              />
-              {!isPlaying && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                  <Play className="w-16 h-16 text-white" />
-                </div>
-              )}
-              <button
-                className="absolute bottom-4 right-4 p-2 bg-black bg-opacity-50 rounded-full text-white"
-                onClick={async (e) => {
-                  e.stopPropagation();
-                  await toggleMute();
-                }}
-              >
-                {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+            {!isPlaying && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 pointer-events-none">
+                <Play className="w-16 h-16 text-white" />
+              </div>
+            )}
+            <button
+              type="button"
+              className="absolute bottom-4 right-4 p-2 bg-black bg-opacity-50 rounded-full text-white"
+              onClick={async (e) => {
+                e.stopPropagation();
+                await toggleMute();
+              }}
+              aria-label={isMuted ? 'Unmute video' : 'Mute video'}
+            >
+              {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+            </button>
+          </div>
+        ) : null}
+
+        {/* 3) 如果 media 缺失 → 顯示 avatar 當佔位，避免整張卡片空白 */}
+        {!imageSrc && !(mediaType === 'video' && videoSrc) ? (
+          <img
+            src={userImage}
+            alt="Fallback"
+            className="w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
+            draggable={false}
+          />
+        ) : null}
+      </div>
 
       {/* Actions */}
       <div className="p-3">
         <div className="flex justify-between">
           <div className="flex space-x-4">
-            <Heart 
-              className={`h-6 w-6 cursor-pointer transition-transform hover:scale-110 ${isLiked ? 'fill-red-500 text-red-500' : 'text-black'}`} 
+            <Heart
+              className={`h-6 w-6 cursor-pointer transition-transform hover:scale-110 ${isLiked ? 'fill-red-500 text-red-500' : 'text-black'}`}
               onClick={handleLike}
             />
-            <MessageCircle 
-              className="h-6 w-6 cursor-pointer transition-transform hover:scale-110" 
+            <MessageCircle
+              className="h-6 w-6 cursor-pointer transition-transform hover:scale-110"
               onClick={async () => await trackInteraction('comment_click', postId, username)}
             />
-            <Send 
-              className="h-6 w-6 cursor-pointer transition-transform hover:scale-110" 
+            <Send
+              className="h-6 w-6 cursor-pointer transition-transform hover:scale-110"
               onClick={handleShare}
             />
           </div>
-          <Bookmark 
-            className={`h-6 w-6 cursor-pointer transition-transform hover:scale-110 ${isSaved ? 'fill-black' : ''}`} 
+          <Bookmark
+            className={`h-6 w-6 cursor-pointer transition-transform hover:scale-110 ${isSaved ? 'fill-black' : ''}`}
             onClick={handleSave}
           />
         </div>
@@ -256,10 +287,7 @@ const Post: React.FC<PostProps> = ({
         {comments.length > 0 && (
           <div className="mt-2">
             {comments.length > 2 && !showAllComments && (
-              <button 
-                className="text-sm text-gray-500 mb-1"
-                onClick={toggleComments}
-              >
+              <button className="text-sm text-gray-500 mb-1" onClick={toggleComments} type="button">
                 View all {comments.length} comments
               </button>
             )}
@@ -269,10 +297,7 @@ const Post: React.FC<PostProps> = ({
               </div>
             ))}
             {showAllComments && comments.length > 2 && (
-              <button 
-                className="text-sm text-gray-500 mt-1"
-                onClick={toggleComments}
-              >
+              <button className="text-sm text-gray-500 mt-1" onClick={toggleComments} type="button">
                 Show less
               </button>
             )}
@@ -292,10 +317,7 @@ const Post: React.FC<PostProps> = ({
               onFocus={async () => await trackInteraction('comment_input_focus', postId, username)}
             />
             {comment.length > 0 && (
-              <button 
-                type="submit" 
-                className="text-blue-500 font-semibold text-sm"
-              >
+              <button type="submit" className="text-blue-500 font-semibold text-sm">
                 Post
               </button>
             )}

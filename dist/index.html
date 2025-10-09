@@ -5,10 +5,145 @@
     <link rel="icon" type="image/svg+xml" href="/amylumiere4/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Instagram Interface Clone</title>
-    <script type="module" crossorigin src="/amylumiere4/assets/index-MNqBfcRV.js"></script>
+
+    <!-- （可選）預連線常見圖片來源，加速首包 -->
+    <link rel="preconnect" href="https://images.pexels.com" />
+    <link rel="dns-prefetch" href="https://images.pexels.com" />
+    <link rel="preconnect" href="https://i.ibb.co" />
+    <link rel="dns-prefetch" href="https://i.ibb.co" />
+    <script type="module" crossorigin src="/amylumiere4/assets/index-Dj6VhF1y.js"></script>
     <link rel="stylesheet" crossorigin href="/amylumiere4/assets/index-DuwFfNXd.css">
   </head>
   <body>
     <div id="root"></div>
+
+    <!-- Qualtrics iframe integration: UUID echo + throttled auto-resize + bottom-detect -->
+    <script>
+      (function () {
+        // ==== 自動偵測父頁（Qualtrics）來源 ====
+        var parentOrigin = (function () {
+          try { return new URL(document.referrer).origin || "*"; }
+          catch (e) { return "*"; }
+        })();
+
+        function getParam(name) {
+          var m = new RegExp('[?&]' + name + '=([^&]*)').exec(location.search);
+          return m ? decodeURIComponent(m[1]) : '';
+        }
+        function isUUIDv4(x) {
+          return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(x);
+        }
+        function post(msg) {
+          try { parent.postMessage(msg, parentOrigin); }
+          catch (e) { parent.postMessage(msg, "*"); }
+        }
+
+        // ① 回傳 UUID 給父頁（供驗證/記錄）
+        var pid = getParam('pid') || '';
+        post({ type: 'uuid-echo', pid: pid, valid: isUUIDv4(pid) });
+
+        // ② 自動回報頁高（節流）
+        var pending = false, lastH = 0, lastSent = 0;
+        function computeHeight() {
+          return Math.max(
+            document.documentElement.scrollHeight,
+            document.body ? document.body.scrollHeight : 0
+          ) | 0;
+        }
+        function postHeight(immediate) {
+          if (pending && !immediate) return;
+          pending = true;
+          requestAnimationFrame(function () {
+            var h = computeHeight();
+            var now = performance.now();
+            // 高度變化 >=10px 或距上次 >=300ms 才回報，避免 reflow 風暴
+            if (Math.abs(h - lastH) >= 10 || (now - lastSent) >= 300) {
+              lastH = h; lastSent = now;
+              post({ type: 'mockup:height', height: h });
+            }
+            pending = false;
+          });
+        }
+
+        window.addEventListener('load', function () {
+          // 初次與延後補報（字體/圖片載入完成後）
+          postHeight(true);
+          setTimeout(function () { postHeight(true); }, 250);
+          setTimeout(function () { postHeight(true); }, 800);
+        });
+
+        try {
+          new ResizeObserver(function () { postHeight(false); })
+            .observe(document.documentElement);
+        } catch (e) {
+          // 舊環境 fallback
+          setInterval(function () { postHeight(false); }, 500);
+        }
+
+        // ③ 偵測滑到底（只觸發一次，且節流）
+        function atBottom() {
+          return (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 2);
+        }
+        var bottomNotified = false, scrollTick = false;
+        function onScroll() {
+          if (bottomNotified || scrollTick) return;
+          scrollTick = true;
+          requestAnimationFrame(function () {
+            scrollTick = false;
+            if (atBottom()) {
+              bottomNotified = true;
+              post({ type: 'scrolled-bottom' });
+              window.removeEventListener('scroll', onScroll);
+            }
+          });
+        }
+        window.addEventListener('scroll', onScroll, { passive: true });
+
+        // 沒有捲動空間的小頁面（render 穩定後再判一次）
+        window.addEventListener('load', function () {
+          setTimeout(function () {
+            if (!bottomNotified && atBottom()) {
+              bottomNotified = true;
+              post({ type: 'scrolled-bottom' });
+              window.removeEventListener('scroll', onScroll);
+            }
+          }, 300);
+        });
+      })();
+    </script>
+
+    <!-- (必做) 強制更新到最新 Service Worker，避免舊 SW 殘留載入第三方資源 -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations()
+          .then(function (regs) { regs.forEach(function (r) { try { r.update(); } catch (_) {} }); })
+          .catch(function () {});
+      }
+    </script>
+
+    <!-- (可選) 防呆：攔截動態插入的 reCAPTCHA script/iframe（若你的頁面不需要 Google 服務） -->
+    <script>
+      (function(){
+        var origCreate = document.createElement;
+        document.createElement = function(tag){
+          var el = origCreate.call(document, tag);
+          function setSrc(p, v){
+            if (typeof v === 'string' && /recaptcha/i.test(v)) {
+              // 阻擋插入 reCAPTCHA
+              return true;
+            }
+            el[p] = v; return true;
+          }
+          if (tag === 'script' || tag === 'iframe') {
+            return new Proxy(el, {
+              set: function (t, p, v) {
+                return (p === 'src' || p === 'srcdoc') ? setSrc(p, v) : (t[p] = v, true);
+              }
+            });
+          }
+          return el;
+        };
+      })();
+    </script>
   </body>
 </html>
