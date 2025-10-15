@@ -72,7 +72,7 @@ export const posts: Post[] = [
     "location": "Tuscany, Italy",
     "media": {
       "type": "video",
-      "url": "https://res.cloudinary.com/ddunt6myr/video/upload/v1754024802/%E6%9C%AA%E5%91%BD%E5%90%8D_1024_x_1024_%E5%83%8F%E7%B4%A0_eikho6.mp4"
+      "url": "https://res.cloudinary.com/ddunt6myr/video/upload/v1760556721/video_for_BIR_4_gc9la8.mp4"
     },
     "caption": "I belong here. So does my body.",
     "likes": 9724,
