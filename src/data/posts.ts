@@ -18,11 +18,11 @@ export const posts: Post[] = [
   {
     "id": "1",
     "username": "beautyamy.ai",
-    "userImage": "https://images.pexels.com/photos/34312631/pexels-photo-34312631.jpeg",
+    "userImage": "https://tiara-lin.github.io/mockup-images/amy_h/9.jpg",
     "location": "Paris, France",
     "media": {
       "type": "image",
-      "url": "https://images.pexels.com/photos/34312627/pexels-photo-34312627.jpeg"
+      "url": "https://tiara-lin.github.io/mockup-images/amy_h/1.jpg"
     },
     "caption": "Soft power. Quiet confidence. Real beauty.",
     "likes": 10343,
@@ -43,11 +43,11 @@ export const posts: Post[] = [
   {
     "id": "2",
     "username": "beautyamy.ai",
-    "userImage": "https://images.pexels.com/photos/34312631/pexels-photo-34312631.jpeg",
+    "userImage": "https://tiara-lin.github.io/mockup-images/amy_h/9.jpg",
     "location": "Paris, France",
     "media": {
       "type": "image",
-      "url": "https://images.pexels.com/photos/34312632/pexels-photo-34312632.jpeg"
+      "url": "https://tiara-lin.github.io/mockup-images/amy_h/2.jpg"
     },
     "caption": "My shape doesn’t need fixing. It needs space.",
     "likes": 10020,
@@ -68,11 +68,11 @@ export const posts: Post[] = [
   {
     "id": "3",
     "username": "beautyamy.ai",
-    "userImage": "https://images.pexels.com/photos/34312631/pexels-photo-34312631.jpeg",
+    "userImage": "https://tiara-lin.github.io/mockup-images/amy_h/9.jpg",
     "location": "Tuscany, Italy",
     "media": {
       "type": "video",
-      "url": "https://res.cloudinary.com/ddunt6myr/video/upload/v1754941480/video_for_BIR_3_zwyfno.mp4"
+      "url": "https://res.cloudinary.com/ddunt6myr/video/upload/v1754024802/%E6%9C%AA%E5%91%BD%E5%90%8D_1024_x_1024_%E5%83%8F%E7%B4%A0_eikho6.mp4"
     },
     "caption": "I belong here. So does my body.",
     "likes": 9724,
@@ -93,11 +93,11 @@ export const posts: Post[] = [
   {
     "id": "4",
     "username": "beautyamy.ai",
-    "userImage": "https://images.pexels.com/photos/34312631/pexels-photo-34312631.jpeg",
+    "userImage": "https://tiara-lin.github.io/mockup-images/amy_h/9.jpg",
     "location": "Los Angeles, CA",
     "media": {
       "type": "image",
-      "url": "https://images.pexels.com/photos/34312635/pexels-photo-34312635.jpeg"
+      "url": "https://tiara-lin.github.io/mockup-images/amy_h/4.jpg"
     },
     "caption": "Joy tastes better when you love yourself.",
     "likes": 11248,
@@ -118,11 +118,11 @@ export const posts: Post[] = [
   {
     "id": "5",
     "username": "beautyamy.ai",
-    "userImage": "https://images.pexels.com/photos/34312631/pexels-photo-34312631.jpeg",
+    "userImage": "https://tiara-lin.github.io/mockup-images/amy_h/9.jpg",
     "location": "Barcelona, Spain",
     "media": {
       "type": "image",
-      "url": "https://images.pexels.com/photos/34312628/pexels-photo-34312628.jpeg"
+      "url": "https://tiara-lin.github.io/mockup-images/amy_h/5.jpg"
     },
     "caption": "I don’t fit in a frame—I redefine it.",
     "likes": 10877,
@@ -143,11 +143,11 @@ export const posts: Post[] = [
   {
     "id": "6",
     "username": "beautyamy.ai",
-    "userImage": "https://images.pexels.com/photos/34312631/pexels-photo-34312631.jpeg",
+    "userImage": "https://tiara-lin.github.io/mockup-images/amy_h/9.jpg",
     "location": "Amsterdam, Netherlands",
     "media": {
       "type": "image",
-      "url": "https://images.pexels.com/photos/34312633/pexels-photo-34312633.jpeg"
+      "url": "https://tiara-lin.github.io/mockup-images/amy_h/6.jpg"
     },
     "caption": "I carry the softness the world needs.",
     "likes": 10594,
@@ -168,11 +168,11 @@ export const posts: Post[] = [
   {
     "id": "7",
     "username": "beautyamy.ai",
-    "userImage": "https://images.pexels.com/photos/34312631/pexels-photo-34312631.jpeg",
+    "userImage": "https://tiara-lin.github.io/mockup-images/amy_h/9.jpg",
     "location": "Berlin, Germany",
     "media": {
       "type": "image",
-      "url": "https://images.pexels.com/photos/34312630/pexels-photo-34312630.jpeg"
+      "url": "https://tiara-lin.github.io/mockup-images/amy_h/7.jpg"
     },
     "caption": "Strong doesn’t mean shrinking your shine.",
     "likes": 9962,
@@ -193,11 +193,11 @@ export const posts: Post[] = [
   {
     "id": "8",
     "username": "beautyamy.ai",
-    "userImage": "https://images.pexels.com/photos/34312631/pexels-photo-34312631.jpeg",
+    "userImage": "https://tiara-lin.github.io/mockup-images/amy_h/9.jpg",
     "location": "Lake Como, Italy",
     "media": {
       "type": "image",
-      "url": "https://images.pexels.com/photos/34312629/pexels-photo-34312629.jpeg"
+      "url": "https://tiara-lin.github.io/mockup-images/amy_h/8.jpg"
     },
     "caption": "Every curve holds power and peace.",
     "likes": 12031,
@@ -218,11 +218,11 @@ export const posts: Post[] = [
   {
     "id": "9",
     "username": "beautyamy.ai",
-    "userImage": "https://images.pexels.com/photos/34312631/pexels-photo-34312631.jpeg",
+    "userImage": "https://tiara-lin.github.io/mockup-images/amy_h/9.jpg",
     "location": "Malibu Beach, CA",
     "media": {
       "type": "image",
-      "url": "https://images.pexels.com/photos/34312631/pexels-photo-34312631.jpeg"
+      "url": "https://tiara-lin.github.io/mockup-images/amy_h/9.jpg"
     },
     "caption": "My body holds stories, not standards.",
     "likes": 12783,

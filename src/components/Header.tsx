@@ -86,7 +86,7 @@ const Header: React.FC = () => {
             onClick={() => handleNavClick('profile')}
           >
             <img
-              src="https://images.pexels.com/photos/34312631/pexels-photo-34312631.jpeg" 
+              src="https://tiara-lin.github.io/mockup-images/amy_h/9.jpg" 
               alt="Profile"
               className="h-full w-full object-cover"
             />
