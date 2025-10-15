@@ -47,7 +47,7 @@ function App() {
             <Profile 
               username="beautyamy.ai"
               name="Amy Lumiere"
-              imageUrl="https://i.ibb.co/chMm3ncq/9.jpg"
+              imageUrl="https://images.pexels.com/photos/34312631/pexels-photo-34312631.jpeg"
             />
             <Suggestions />
             <Footer />

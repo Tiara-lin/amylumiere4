@@ -48,7 +48,7 @@ const Stories: React.FC = () => {
   const stories = [
     {
       username: 'beautyamy.ai',
-      imageUrl: 'https://i.ibb.co/chMm3ncq/9.jpg',
+      imageUrl: 'https://images.pexels.com/photos/34312631/pexels-photo-34312631.jpeg',
       isViewed: true
     },
     {
