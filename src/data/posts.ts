@@ -19,25 +19,25 @@ export const posts: Post[] = [
     "id": "1",
     "username": "beautyamy.ai",
     "userImage": "https://tiara-lin.github.io/mockup-images/amy_h/9.jpg",
-    "location": "Paris, France",
+    "location": "Tuscany, Italy",
     "media": {
-      "type": "image",
-      "url": "https://tiara-lin.github.io/mockup-images/amy_h/1.jpg"
+      "type": "video",
+      "url": "https://res.cloudinary.com/ddunt6myr/video/upload/v1760556721/video_for_BIR_4_gc9la8.mp4"
     },
-    "caption": "Soft power. Quiet confidence. Real beauty.",
-    "likes": 10343,
-    "timestamp": "2 HOURS AGO",
+    "caption": "I belong here. So does my body.",
+    "likes": 9724,
+    "timestamp": "2025/04/10",
     "comments": [
-      { "username": "dylan_49", "text": "☀️☕" },
-      { "username": "ruby_59", "text": "Effortless and earned" },
-      { "username": "ben26", "text": "Rooted in light" },
-      { "username": "candy_61", "text": "No edits needed" },
-      { "username": "kevin53", "text": "Serenity queen" },
-      { "username": "lucy75", "text": "Courage is calm" },
-      { "username": "mia.59", "text": "Golden in motion" },
-      { "username": "rachel.09", "text": "Dream shape" },
-      { "username": "sara11", "text": "🎧🪑" },
-      { "username": "ryan80", "text": "🧷🌊" }
+      { "username": "kevin10", "text": "🧘‍♀️🫶" },
+      { "username": "mark66", "text": "🥹✨" },
+      { "username": "tyler_29", "text": "🪞🌿" },
+      { "username": "mark76", "text": "💥📍" },
+      { "username": "zoe23", "text": "🌤️🪞" },
+      { "username": "leo36", "text": "Composed and whole" },
+      { "username": "nora65", "text": "Smile says everything" },
+      { "username": "faye18", "text": "Owning the now" },
+      { "username": "nate.55", "text": "Nourished inside" },
+      { "username": "nora_34", "text": "Tender terrain" }
     ]
   },
   {
@@ -69,25 +69,25 @@ export const posts: Post[] = [
     "id": "3",
     "username": "beautyamy.ai",
     "userImage": "https://tiara-lin.github.io/mockup-images/amy_h/9.jpg",
-    "location": "Tuscany, Italy",
+    "location": "Paris, France",
     "media": {
-      "type": "video",
-      "url": "https://res.cloudinary.com/ddunt6myr/video/upload/v1760556721/video_for_BIR_4_gc9la8.mp4"
+      "type": "image",
+      "url": "https://tiara-lin.github.io/mockup-images/amy_h/1.jpg"
     },
-    "caption": "I belong here. So does my body.",
-    "likes": 9724,
-    "timestamp": "2025/04/10",
+    "caption": "Soft power. Quiet confidence. Real beauty.",
+    "likes": 10343,
+    "timestamp": "2 HOURS AGO",
     "comments": [
-      { "username": "kevin10", "text": "🧘‍♀️🫶" },
-      { "username": "mark66", "text": "🥹✨" },
-      { "username": "tyler_29", "text": "🪞🌿" },
-      { "username": "mark76", "text": "💥📍" },
-      { "username": "zoe23", "text": "🌤️🪞" },
-      { "username": "leo36", "text": "Composed and whole" },
-      { "username": "nora65", "text": "Smile says everything" },
-      { "username": "faye18", "text": "Owning the now" },
-      { "username": "nate.55", "text": "Nourished inside" },
-      { "username": "nora_34", "text": "Tender terrain" }
+      { "username": "dylan_49", "text": "☀️☕" },
+      { "username": "ruby_59", "text": "Effortless and earned" },
+      { "username": "ben26", "text": "Rooted in light" },
+      { "username": "candy_61", "text": "No edits needed" },
+      { "username": "kevin53", "text": "Serenity queen" },
+      { "username": "lucy75", "text": "Courage is calm" },
+      { "username": "mia.59", "text": "Golden in motion" },
+      { "username": "rachel.09", "text": "Dream shape" },
+      { "username": "sara11", "text": "🎧🪑" },
+      { "username": "ryan80", "text": "🧷🌊" }
     ]
   },
   {
